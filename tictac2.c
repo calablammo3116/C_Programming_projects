@@ -288,8 +288,11 @@ int player_marker_placement_choice, winner, num_spaces, rows, cols, player_choic
 char char_choice, computer_choice;
 char* tic_tac_toe_board;
 
-rows = 3;
-cols = rows;
+
+printf("How many rows would you like to have? The amount of columns will be the same as the amount of rows.\n");
+scanf("%d", &rows);
+cols = rows;    // even though cols is the same value as rows, it helps with readability to have two separate variables for them
+
 num_spaces= rows*cols;
 
 tic_tac_toe_board = (char *)malloc( sizeof(char) * num_spaces);
