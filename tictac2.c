@@ -23,35 +23,14 @@ for(i=0;i<rows_or_cols*rows_or_cols;i++)
 
 char choose_character(void)
 {
-    char* char_choice;
+    char char_choice;
 
     puts("Hello! Welcome to Tic-Tac-Toe. Here, you will play as either Xs or Os, and the computer will play as the opposite as you.\n");
     puts("Would you like to play as Xs or Os?\nType the letter you would like to play as. Then hit enter: ");
     scanf("%c", &char_choice);
-    //fgets(char_choice,1,stdin);
 
-    //&char_choice
-
-/*     while((char_choice != 1) && (char_choice != 2))
- *     {
- *         puts("Whoops, that was an invalid choice! Please type 1 for playing as Xs or 2 for playing as Os.\n");
- *         fgets(char_choice,1,stdin);
- *     }
- */
-
-/*     if((char_choice == 0x78) || (char_choice == 0x58)
- *     {
- *         fputs("You will play as Xs!\n",stdout);
- *     }
- *     else if((char_choice==0x6F)||(char_choice==0x4F)
- *     {
- *         fputs("You will play as Os!\n",stdout);
- *     }
- *     else
- *     {
- */
     printf("You will play as %c!\n",char_choice);
-//    }
+
 
     return char_choice;
 }
@@ -284,10 +263,13 @@ int win_check(char* board, char player_char_choice, char computer_char_choice, i
 int main(int* argc, char** argv)
 {
 //system("chcp 65001");
-int player_marker_placement_choice, winner, num_spaces, rows, cols, player_choice_row, player_choice_col, computer_index_choice, i, j;
+int player_marker_placement_choice, winner, num_spaces, rows, cols, player_choice_row, player_choice_col, computer_index_choice, exit_choice, i, j;
 char char_choice, computer_choice;
 char* tic_tac_toe_board;
 
+// default values for player_choice_row and player_choice_col, to force them to be invalid at first
+player_choice_row = -1;
+player_choice_col = -1;
 
 printf("How many rows would you like to have? The amount of columns will be the same as the amount of rows.\n");
 scanf("%d", &rows);
@@ -296,6 +278,10 @@ cols = rows;    // even though cols is the same value as rows, it helps with rea
 num_spaces= rows*cols;
 
 tic_tac_toe_board = (char *)malloc( sizeof(char) * num_spaces);
+if(tic_tac_toe_board == NULL){
+    printf("Sorry, a memory occurred while making the board. If you wish to play, please try running the program again.\n");
+    return 0;
+}
 
 //seed the random number generator with the time function
 srand(time(0));
@@ -325,19 +311,36 @@ while(win_check(tic_tac_toe_board, char_choice, computer_choice, rows) == 0)
 {
     gdisplay(tic_tac_toe_board, rows);
 
-//    getchar();
     fputs("What index of the board would you like to pick? Specify 1st) the row, then press enter, and 2nd) the column, then press enter \n(use base 1).\n",stdout);
-//    getchar();
-    scanf("%d",&player_choice_row);
-//    getchar();
-    scanf("%d",&player_choice_col);
+    while(player_choice_row < 0 || player_choice_row >= rows) {
+            if(player_choice_row == -2) {
+                printf("You have selected to exit.\n");
+                return 0;
+            }
+            scanf("%d",&player_choice_row);
+            if(player_choice_row < 0 || player_choice_row >= rows) {
+                printf("Sorry! That was an invalid row choice. Please try to choose the row again.\nIf you want to exit, type -2.  ");
+            }
+    }
+    while(player_choice_col < 0 || player_choice_col >= cols) {
+            if(player_choice_col == -2) {
+                printf("You have selected to exit.\n");
+                return 0;
+            }
+            scanf("%d",&player_choice_col);
+            if(player_choice_col < 0 || player_choice_col >= cols) {
+                printf("Sorry! That was an invalid row choice. Please try to choose the column again.\nIf you want to exit, type -2.  ");
+            }
+    }
     place_marker(player_choice_row,player_choice_col, rows, char_choice, tic_tac_toe_board);
     computer_index_choice=rand()%num_spaces; //Make the computer's choice of where to place it's marker simply a random index in the range
                                              // [0,num_spaces) by using the mod operator
+
     while(tic_tac_toe_board[computer_index_choice]!=0x20)
     {
         computer_index_choice=rand()%num_spaces;
     }
+
     tic_tac_toe_board[computer_index_choice]=computer_choice;
     fputs("\n",stdout);
 }
@@ -354,6 +357,7 @@ else if(win_check(tic_tac_toe_board, char_choice, computer_choice, rows) == 2)
 }
 
 free(tic_tac_toe_board);
+tic_tac_toe_board = NULL;
 
 return 0;
 }
