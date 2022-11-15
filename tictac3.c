@@ -25,7 +25,9 @@ char choose_character(void)
 {
     char char_choice;
 
-    puts("Hello! Welcome to Tic-Tac-Toe. Here, you will play as either Xs or Os, and the computer will play as the opposite as you.\n");
+    // flush the input buffer
+    fflush(stdin);
+    puts("Here, you will play as either Xs or Os, and the computer will play as the opposite as you.\n");
     puts("Would you like to play as Xs or Os?\nType the letter you would like to play as. Then hit enter: ");
     scanf("%c", &char_choice);
 
@@ -106,106 +108,64 @@ int win_check(char* board, char player_char_choice, char computer_char_choice, i
     //Check to see if there's a horizontal win case
     for(i=0;i<num_rows_or_cols;i++)
     {
-        for(j=0;j<num_rows_or_cols;j++)
+        for(j=0;j<num_rows_or_cols-1;j++)
         {
-            if(j<num_rows_or_cols-1)
+            //If you're still not at the last index of the row and the next index is not equal to the current index,
+            // then just break out of the loop, since it's clear that no one won with the horizontal row method
+            if(board[i*num_rows_or_cols+j]!=board[i*num_rows_or_cols+j+1])
             {
-                //If you're still not at the last index of the row and the next index is not equal to the current index,
-                // then just break out of the loop, since it's clear that no one won with the horizontal row method
-                if(board[i*num_rows_or_cols+j]!=board[i*num_rows_or_cols+j+1])
+                break;
+            }
+            //If every index in the row on the board (not the display board) IS equal to each other,
+            // then check to see whose choice it is: the player's, or the computer's
+            else
+            {
+                //Check to see if the player won
+                if((j == num_rows_or_cols - 2) && (board[i*num_rows_or_cols+j]==player_char_choice) && (board[i*num_rows_or_cols+j]==board[i*num_rows_or_cols+j+1]))
+                {
+                    //If the player did win, then set the win_value to "1" and return the win_value
+                    win_value = 1;
+                    return win_value;
+                }
+                else if((j == num_rows_or_cols - 2) && (board[i*num_rows_or_cols+j]==computer_char_choice) && (board[i*num_rows_or_cols+j+1]==computer_char_choice))
+                {
+                    //Otherwise, if the player didn't win, then since it's a binomial game then the computer must've won.
+                    // So, set the win_value to "2" and return the win_value
+                    win_value = 2;
+                    return win_value;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+        }
+    }
+    //Check to see if there's a vertical win case
+    for(i=0;i<num_rows_or_cols;i++)
+    {
+        for(j=0;j<num_rows_or_cols-1;j++)
+        {
+            //If you're at any index before the last one of a vertical column,
+            // and the next index in the vertical column doesn't equal that one's,
+            // then just break out of the loop, since it's clear that no one won
+            // with that vertical column
+            if(board[i+j*num_rows_or_cols]!=board[i+(j+1)*num_rows_or_cols])
                 {
                     break;
                 }
-                //If every index in the row on the board (not the display board) IS equal to each other,
-                // then check to see whose choice it is: the player's, or the computer's
-                else
-                {
-                    //Check to see if the player won
-                    if(board[i*num_rows_or_cols+j]==player_char_choice)
-                    {
-                        //If the player did win, then set the win_value to "1" and return the win_value
-                        win_value = 1;
-                        return win_value;
-                    }
-                    else if(board[i*num_rows_or_cols+j]==computer_char_choice)
-                    {
-                        //Otherwise, if the player didn't win, then since it's a binomial game then the computer must've won.
-                        // So, set the win_value to "2" and return the win_value
-                        win_value = 2;
-                        return win_value;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-            }
-        }
-        //Check to see if there's a vertical win case
-        for(i=0;i<num_rows_or_cols;i++)
-        {
-            for(j=0;j<num_rows_or_cols-1;j++)
+            //If you are at the index before the last one AND that index EQUALS the next index
+            // (i.e. the last one), then we have a winner! Check to see who it is,
+            // and then return their win_value (2 if it is the computer who won,
+            // and 1 if it is the player who won)
+            else if((j+1)==(num_rows_or_cols-1))
             {
-                //If you're at any index before the last one of a vertical column,
-                // and the next index in the vertical column doesn't equal that one's,
-                // then just break out of the loop, since it's clear that no one won
-                // with that vertical column
-                if(board[i+j*num_rows_or_cols]!=board[i+(j+1)*num_rows_or_cols])
-                    {
-                        break;
-                    }
-                //If you are at the index before the last one AND that index EQUALS the next index
-                // (i.e. the last one), then we have a winner! Check to see who it is,
-                // and then return their win_value (2 if it is the computer who won,
-                // and 1 if it is the player who won)
-                else if((j+1)==(num_rows_or_cols-1))
-                {
-                    if(board[i+j*num_rows_or_cols]==player_char_choice)
-                    {
-                        win_value=1;
-                        return win_value;
-                    }
-                    else if(board[i+j*num_rows_or_cols]==computer_char_choice)
-                    {
-                        win_value=2;
-                        return win_value;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                else
-                {
-                    continue;
-                }
-            }
-        }
-        //Check to see if there's a diagonal win case (top left to bottom right here first)
-        for(i=0;i<num_rows_or_cols-1;i++)
-        {
-            //If you're not at the last index (which you shouldn't be, since "i" is set to be only less than
-            // the number of rows or columns minus 1, i.e. it can only go up to the 2nd to last index),
-            // then check to see if the next index on the board diagonal down right from the current one is equal to the current one,
-            // and if it isn't then just break, since you definitely don't have a winner here then
-            if(board[i*num_rows_or_cols+i]!=board[(i+1)*num_rows_or_cols+i+1])
-            {
-                break;
-            }
-            //If you're at the 2nd to last index and the next index diagonally down and to the right
-            // of your current one is EQUAL to your current one, then since you've already passed the check
-            // for all the other previous indice pairs, then we have a winner! Check to see whether it is the player
-            // or the computer, and then return their win_value.
-            // ACKSHYUALLY, there could be case where the whole row is just empty, so check to make sure that if the win
-            // condition is confirmed, that it is either 1) the player, or 2) the computer that won
-            else if((i==(num_rows_or_cols-2))&&(board[i*(num_rows_or_cols+1)]==board[(i+1)*num_rows_or_cols+i+1]))
-            {
-                if(board[i*(num_rows_or_cols+1)]==player_char_choice)
+                if(board[i+j*num_rows_or_cols]==player_char_choice)
                 {
                     win_value=1;
                     return win_value;
                 }
-                else if(board[i*(num_rows_or_cols+1)]==computer_char_choice)
+                else if(board[i+j*num_rows_or_cols]==computer_char_choice)
                 {
                     win_value=2;
                     return win_value;
@@ -215,44 +175,84 @@ int win_check(char* board, char player_char_choice, char computer_char_choice, i
                     continue;
                 }
             }
-            //In the case that you're not at the last index, but the next index in the vertical column still matches yours (the current one),
-            // simply continue the loop
-            else
-            {
-                continue;
-            }
-        }
-        //Check to see if there's a diagonal win case (bottom left to top right this time around)
-        for(i=num_rows_or_cols;i>0;i--)
-        {
-            if(board[i*num_rows_or_cols+i]!=board[(i-1)*num_rows_or_cols+i-1])
-            {
-                break;
-            }
-            else if((i==1)&&(board[i*num_rows_or_cols+i]==board[(i-1)*num_rows_or_cols+i-1]))
-            {
-                if(board[i*num_rows_or_cols+i]==player_char_choice)
-                {
-                    win_value=1;
-                    return win_value;
-                }
-                else if(board[i*num_rows_or_cols+i]==computer_char_choice)
-                {
-                    win_value=2;
-                    return win_value;
-                }
-                else
-                {
-                    continue;
-                }
-            }
-            //Otherwise, simply continue the loop
             else
             {
                 continue;
             }
         }
     }
+    //Check to see if there's a diagonal win case (top left to bottom right here first)
+    for(i=0;i<num_rows_or_cols-1;i++)
+    {
+        //If you're not at the last index (which you shouldn't be, since "i" is set to be only less than
+        // the number of rows or columns minus 1, i.e. it can only go up to the 2nd to last index),
+        // then check to see if the next index on the board diagonal down right from the current one is equal to the current one,
+        // and if it isn't then just break, since you definitely don't have a winner here then
+        if(board[i*num_rows_or_cols+i]!=board[(i+1)*num_rows_or_cols+i+1])
+        {
+            break;
+        }
+        //If you're at the 2nd to last index and the next index diagonally down and to the right
+        // of your current one is EQUAL to your current one, then since you've already passed the check
+        // for all the other previous indice pairs, then we have a winner! Check to see whether it is the player
+        // or the computer, and then return their win_value.
+        // ACKSHYUALLY, there could be case where the whole row is just empty, so check to make sure that if the win
+        // condition is confirmed, that it is either 1) the player, or 2) the computer that won
+        else if((i==(num_rows_or_cols-2))&&(board[i*(num_rows_or_cols+1)]==board[(i+1)*num_rows_or_cols+i+1]))
+        {
+            if(board[i*(num_rows_or_cols+1)]==player_char_choice)
+            {
+                win_value=1;
+                return win_value;
+            }
+            else if(board[i*(num_rows_or_cols+1)]==computer_char_choice)
+            {
+                win_value=2;
+                return win_value;
+            }
+            else
+            {
+                continue;
+            }
+        }
+        //In the case that you're not at the last index, but the next index in the vertical column still matches yours (the current one),
+        // simply continue the loop
+        else
+        {
+            continue;
+        }
+    }
+    //Check to see if there's a diagonal win case (bottom left to top right this time around)
+    for(i=num_rows_or_cols;i>0;i--)
+    {
+        if(board[i*num_rows_or_cols+i]!=board[(i-1)*num_rows_or_cols+i-1])
+        {
+            break;
+        }
+        else if((i==1)&&(board[i*num_rows_or_cols+i]==board[(i-1)*num_rows_or_cols+i-1]))
+        {
+            if(board[i*num_rows_or_cols+i]==player_char_choice)
+            {
+                win_value=1;
+                return win_value;
+            }
+            else if(board[i*num_rows_or_cols+i]==computer_char_choice)
+            {
+                win_value=2;
+                return win_value;
+            }
+            else
+            {
+                continue;
+            }
+        }
+        //Otherwise, simply continue the loop
+        else
+        {
+            continue;
+        }
+    }
+
 
 
     return win_value;
@@ -279,7 +279,7 @@ num_spaces= rows*cols;
 
 tic_tac_toe_board = (char *)malloc( sizeof(char) * num_spaces);
 if(tic_tac_toe_board == NULL){
-    printf("Sorry, a memory occurred while making the board. If you wish to play, please try running the program again.\n");
+    printf("Sorry, a memory error occurred while making the board. If you wish to play, please try running the program again.\n");
     return 0;
 }
 
@@ -291,7 +291,7 @@ srand(time(0));
 //the octal ASCII value for X is 130
 //the octal ASCII value for O is 117
 
-char_choice=choose_character();
+char_choice = choose_character();
 
 if((char_choice==0x58)||(char_choice==0x78))
 {
@@ -309,38 +309,36 @@ set_up_board(rows, tic_tac_toe_board);
 
 while(win_check(tic_tac_toe_board, char_choice, computer_choice, rows) == 0)
 {
+    if((char_choice!=0x4F)&&(char_choice!=0x6F)){
+        computer_index_choice=rand()%num_spaces;
+        while(tic_tac_toe_board[computer_index_choice]!=0x20)
+        {
+            computer_index_choice=rand()%num_spaces;
+        }
+        tic_tac_toe_board[computer_index_choice]=computer_choice;
+
+        gdisplay(tic_tac_toe_board, rows);
+
+        fputs("What index of the board would you like to pick? Specify 1st) the row, then press enter, and 2nd) the column, then press enter \n(use base 1).\n",stdout);
+        scanf("%d",&player_choice_row);
+        scanf("%d",&player_choice_col);
+        place_marker(player_choice_row,player_choice_col, rows, char_choice, tic_tac_toe_board);
+        fputs("\n",stdout);
+        continue;
+    }
+
     gdisplay(tic_tac_toe_board, rows);
 
     fputs("What index of the board would you like to pick? Specify 1st) the row, then press enter, and 2nd) the column, then press enter \n(use base 1).\n",stdout);
-    while(player_choice_row < 0 || player_choice_row >= rows) {
-            if(player_choice_row == -2) {
-                printf("You have selected to exit.\n");
-                return 0;
-            }
-            scanf("%d",&player_choice_row);
-            if(player_choice_row < 0 || player_choice_row >= rows) {
-                printf("Sorry! That was an invalid row choice. Please try to choose the row again.\nIf you want to exit, type -2.  ");
-            }
-    }
-    while(player_choice_col < 0 || player_choice_col >= cols) {
-            if(player_choice_col == -2) {
-                printf("You have selected to exit.\n");
-                return 0;
-            }
-            scanf("%d",&player_choice_col);
-            if(player_choice_col < 0 || player_choice_col >= cols) {
-                printf("Sorry! That was an invalid row choice. Please try to choose the column again.\nIf you want to exit, type -2.  ");
-            }
-    }
+    scanf("%d",&player_choice_row);
+    scanf("%d",&player_choice_col);
     place_marker(player_choice_row,player_choice_col, rows, char_choice, tic_tac_toe_board);
     computer_index_choice=rand()%num_spaces; //Make the computer's choice of where to place it's marker simply a random index in the range
                                              // [0,num_spaces) by using the mod operator
-
     while(tic_tac_toe_board[computer_index_choice]!=0x20)
     {
         computer_index_choice=rand()%num_spaces;
     }
-
     tic_tac_toe_board[computer_index_choice]=computer_choice;
     fputs("\n",stdout);
 }
