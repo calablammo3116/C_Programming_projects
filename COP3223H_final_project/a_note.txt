@@ -1,0 +1,9 @@
+In hindsight, the program has a few problems.
+The most notable one I found was that I never closed the file pointer "fp" in the "read_data(struct stock array[])" function, 
+which I really should have done. 
+Other than that, the main issues seem to be firstly, whitespace and secondly, compatibility with large datasets. Bubble sort is slow in comparison to merge sort for  
+large datasets, although at the time I did not know about recursion since it wasn't taught in COP 3223H "Intro to C," it was taught in COP 3502C, "Computer  
+Science 1." Moreover, the stock array was large enough for demonstration purposes, but far from large enough for an actual stocks dataset, which could contain thousands  
+of stocks and other securities (such as warrants and bonds).
+I also didn't have to use ASCII numbers to denote characters like 'y' or 'n,' I could have simply put the characters 'y' or 'n' within single quotation marks as I just 
+did. 
