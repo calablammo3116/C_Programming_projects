@@ -1,0 +1,10 @@
+11!
+= 11 * 10 * 9 * 8 * 7 * 
+  6 * 5 * 4 * 3 * 2 * 1
+= 39,916,800
+A for loop had to be done at the end of 
+each permutation (or during it) to loop 
+through the entire permutation to determine 
+the sum needed to be looked at in order to 
+give the desired output (the least sum for among 
+all the permutations).

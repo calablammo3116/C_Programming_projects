@@ -1,0 +1,45 @@
+typedef struct Node {
+	int key, data;
+	Node * lChild;
+	Node * rChild;
+} Node;
+
+// Function prototypes
+Node * postorderTraversal(Node * root);
+
+// Function definitions
+// main function
+int main()
+{
+	
+
+	return 0;
+}
+
+// Recursive function to traverse post-order and return all the nodes in a tree.
+Node * postorderTraversal(Node * root)
+{
+	// Case if there is no tree. If so, we cannot traverse the tree, so return NULL.
+	if (root == NULL) {
+		return NULL;
+	}
+	// Case if the node is not a parent.
+	if ((root->lChild == NULL) && (root->rChild == NULL)) { 
+		return root;
+	}
+	// Case if the node has only a left child.
+	if ((root->lChild != NULL) && (root->rChild == NULL)) {
+		// Do the recursion on the only child, the left child.
+		postorderTraversal(root->lChild);
+	} 
+	// Case if the node has only a right child.
+	if ((root->lChild == NULL) && (root->rChild != NULL)) {
+		// Do the recursion on the only child, the right child.
+		postorderTraversal(root->rChild);
+	}
+	// Case if node has two children.
+	// Do the recursion on both children. 
+	// Do it on the left child first, then on the right child.
+	postorderTraversal(root->lChild);
+	postorderTraversal(root->rChild);
+}
